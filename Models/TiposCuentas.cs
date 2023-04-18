@@ -7,9 +7,8 @@ namespace WebManejoPresupuestos.Models
     {
         public int Id { get; set; }
 
+        // validaciones del campo "Nombre"
         [Required (ErrorMessage = "El campo {0}, es obligatorio.")]
-        [StringLength (maximumLength: 50, 
-            MinimumLength = 3, ErrorMessage = "El campo {0} debe tener un rango de {2} y {1} caracteres.")]
         [Display(Name = "Nombre")]
         [PrimeraLetraMayuscula]
         public string Nombre { get; set; } //Nombre es obligatorio.

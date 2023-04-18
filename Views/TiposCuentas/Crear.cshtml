@@ -17,6 +17,8 @@
     <div class="mb-3"> 
         <label asp-for="Nombre" class="form-label"></label>
         <input type="text" asp-for="Nombre" class="form-control"/>
+
+        <!-- Con este span mostramos el mensaje de validacion del campo "Nombre" -->
         <span asp-validation-for="Nombre" class="text-danger"></span>
     </div>
 
