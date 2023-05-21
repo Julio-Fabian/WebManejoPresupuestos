@@ -10,14 +10,13 @@
     tales como: Préstamos, trajetas de crédito, etc.
 </h5>
 
-<!-- Contiene toda la informacion referente a los errores de validacion. -->
+<!-- Contiene toda la informacion referente a los errores de validacion. eb este caso de todo el modelo -->
 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
 <form asp-controller="TiposCuentas" asp-action="Crear">
     <div class="mb-3"> 
         <label asp-for="Nombre" class="form-label"></label>
         <input type="text" asp-for="Nombre" class="form-control"/>
-
         <!-- Con este span mostramos el mensaje de validacion del campo "Nombre" -->
         <span asp-validation-for="Nombre" class="text-danger"></span>
     </div>
@@ -25,6 +24,7 @@
     <button type="submit" class="btn btn-primary">Enviar</button>
 </form>
 
+<!-- secciones de codigo alijadas en lugares especificos del layout -->
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
