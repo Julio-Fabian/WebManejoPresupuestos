@@ -15,6 +15,14 @@ namespace WebManejoPresupuestos.Controllers
             this.repositorioTiposCuentas = repositorioTiposCuentas;
         }
 
+        public async Task<IActionResult> Index()
+        {
+            var usuarioId = 1;
+            var tiposCuentas = await repositorioTiposCuentas.Obtener(usuarioId);
+
+            return View(tiposCuentas);
+        }
+
         public IActionResult Crear()
         {
             return View();
@@ -45,7 +53,22 @@ namespace WebManejoPresupuestos.Controllers
             // si el modelo es valido y no existe la cuenta insertamos asincronamente
             await repositorioTiposCuentas.Crear(cuenta);
 
-            return View();
+            return RedirectToAction("Index");
+        }
+
+
+        [HttpGet] // con este metodo validamos sin pulsar enviar.
+        public async Task<IActionResult> VerificarExisteTipoCuenta(string nombre) 
+        {
+            var usuarioId = 1;
+            var yaExiste = await repositorioTiposCuentas.Existe(nombre, usuarioId);
+
+            if (yaExiste) 
+            {
+                return Json($"La cuenta {nombre} ya existe.");
+            }
+
+            return Json(true);
         }
     }
 }

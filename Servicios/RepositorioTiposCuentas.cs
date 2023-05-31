@@ -41,5 +41,15 @@ namespace WebManejoPresupuestos.Servicios
 
             return id == 1;
         }
+
+        public async Task<IEnumerable<TiposCuentas>> Obtener(int usuarioId)
+        {
+            using (var conn = new SqlConnection(connectionStr))
+            {
+                return await conn.QueryAsync<TiposCuentas>
+                    (@"SELECT Id, Nombre, Orden FROM TiposCuentas
+                       WHERE UsuarioId = @UsuarioId", new { usuarioId });
+            }
+        }
     }
 }

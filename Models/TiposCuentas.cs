@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc;
 using WebManejoPresupuestos.Validaciones;
 
 namespace WebManejoPresupuestos.Models
@@ -10,7 +11,7 @@ namespace WebManejoPresupuestos.Models
         // validaciones del campo "Nombre"
         [Required (ErrorMessage = "El campo {0}, es obligatorio.")]
         [PrimeraLetraMayuscula] // se sobreentiende 'PrimeraLetraMayusculaAttribute'
-        [Display(Name = "Nombre cuenta")]
+        [Remote(action:"VerificarExisteTipoCuenta", controller:"TiposCuentas")] // validacion remota.
         public string Nombre { get; set; } //Nombre es obligatorio.
         
         public int UsuarioId { get; set; }
