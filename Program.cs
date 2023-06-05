@@ -9,9 +9,13 @@ namespace WebManejoPresupuestos
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddControllersWithViews();
+            builder.Services
+                   .AddControllersWithViews();
             // servicio para agregar una cuenta.
-            builder.Services.AddTransient<IRepositorioTiposCuentas, RepositorioTiposCuentas>();
+            builder.Services
+                   .AddTransient<IRepositorioTiposCuentas, RepositorioTiposCuentas>();
+            builder.Services
+                   .AddTransient<IServicioUsuarios, ServicioUsuarios>();
 
             var app = builder.Build();
 
@@ -26,6 +30,7 @@ namespace WebManejoPresupuestos
             }
 
             app.UseHttpsRedirection();
+            
             app.UseStaticFiles();
 
             app.UseRouting();
