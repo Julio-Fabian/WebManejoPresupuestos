@@ -47,9 +47,11 @@ namespace WebManejoPresupuestos.Servicios
         {
             using (var conn = new SqlConnection(connectionStr))
             {
-                return await conn.QueryAsync<TiposCuentas>
-                    (@"SELECT Id, Nombre, Orden FROM TiposCuentas
-                       WHERE UsuarioId = @UsuarioId", new { usuarioId });
+                return await conn.QueryAsync<TiposCuentas>(
+                    @"SELECT Id, Nombre, Orden FROM TiposCuentas
+                    WHERE UsuarioId = @UsuarioId", 
+                    new { usuarioId }
+                );
             }
         }
 
@@ -59,10 +61,12 @@ namespace WebManejoPresupuestos.Servicios
             using (var conn = new SqlConnection(connectionStr))
             {
                 // ExecuteAsync ejecuta un query que no retorna nada.
-                await conn.ExecuteAsync(@"UPDATE TiposCuentas
-                                          SET Nombre = @Nombre
-                                          WHERE Id = @Id",
-                                          tipoCuenta);
+                await conn.ExecuteAsync(
+                    @"UPDATE TiposCuentas
+                    SET Nombre = @Nombre
+                    WHERE Id = @Id",
+                    tipoCuenta
+                );
             }
         }
 
@@ -78,6 +82,16 @@ namespace WebManejoPresupuestos.Servicios
                       new {id, usuarioId}
                 );
             }            
+        }
+
+        public async Task Borrar(int Id) 
+        {
+            using (var connection = new SqlConnection(connectionStr))
+            {
+                await connection.ExecuteAsync(
+                    @"DELETE TiposCuentas WHERE Id = @Id", new {Id}
+                );
+            }
         }
     }
 }

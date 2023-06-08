@@ -13,5 +13,7 @@ namespace WebManejoPresupuestos.Servicios
         Task Actualizar(TiposCuentas tipoCuenta);
 
         Task<TiposCuentas> ObtenerPorId(int id, int usuarioId);
+
+        Task Borrar(int Id);
     }
 }

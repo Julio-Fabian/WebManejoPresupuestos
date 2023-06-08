@@ -11,8 +11,7 @@ namespace WebManejoPresupuestos.Controllers
         private readonly IRepositorioTiposCuentas repositorioTiposCuentas;
         private readonly IServicioUsuarios repositorioServicioUsuarios;
 
-        public TiposCuentasController(IRepositorioTiposCuentas repositorioTiposCuentas,
-            IServicioUsuarios repositorioServicioUsuarios) 
+        public TiposCuentasController(IRepositorioTiposCuentas repositorioTiposCuentas, IServicioUsuarios repositorioServicioUsuarios) 
         {
             this.repositorioTiposCuentas = repositorioTiposCuentas;
             this.repositorioServicioUsuarios = repositorioServicioUsuarios;
@@ -90,6 +89,38 @@ namespace WebManejoPresupuestos.Controllers
             }
 
             await repositorioTiposCuentas.Actualizar(tipoCuenta);
+            return RedirectToAction("Index");
+        }
+
+
+
+        [HttpGet]
+        public async Task<IActionResult> Borrar(int Id)
+        {
+            var usuarioId = repositorioServicioUsuarios.ObtenerUsuarioId();
+            var tipoCuenta = await repositorioTiposCuentas.ObtenerPorId(Id, usuarioId);
+
+            if (tipoCuenta is null)
+            {
+                return RedirectToAction("NoEncontrado", "Home");
+            }
+
+            return View(tipoCuenta);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> BorrarTipoCuenta(int Id) 
+        {
+            var usuarioId = repositorioServicioUsuarios.ObtenerUsuarioId();
+            var tipoCuenta = await repositorioTiposCuentas.ObtenerPorId(Id, usuarioId);
+
+            if (tipoCuenta is null)
+            {
+                return RedirectToAction("NoEncontrado", "Home");
+            }
+
+            await repositorioTiposCuentas.Borrar(Id);
             return RedirectToAction("Index");
         }
 

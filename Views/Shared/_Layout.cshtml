@@ -3,10 +3,11 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - WebManejoPresupuestos</title>
+    <title>@ViewData["Title"] - Manejo Presupuestos</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/WebManejoPresupuestos.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/custom.css" asp-append-version="true" />
 </head>
 <body>
     <header>
@@ -45,6 +46,7 @@
     <!-- primero deben renderizarse estos scripts, al ultimo los reder section -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery-UI/jquery-ui.min.js"></script> <!-- mejora de experiencia de usuario gui -->
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false) <!-- Aqui se renderizan los scripts -->
 </body>
