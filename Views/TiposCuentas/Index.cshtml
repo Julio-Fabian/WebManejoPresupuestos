@@ -27,6 +27,7 @@
         {
             <tr>
                 <td>
+                    <input type="hidden" value="@cuenta.Id" class="ids" />
                     <a class="btn btn-primary" asp-action="Editar" asp-route-id="@cuenta.Id">
                         Editar
                     </a>
@@ -47,8 +48,47 @@
 @section Scripts 
 {
     <script>
+
+        const urlOrdenar = '@Url.Action("ordenar")';
+
         $(function() {
-            $("#reordenable").sortable();
+            $("#reordenable").sortable({
+                // Este codigo se ejecuta despues de terminar de mover el elemento de
+                // de la tabla (es un evento) "es un 'onStop' event?""
+                stop: async function(e, ui) {
+                    await actualizarOrdenes();
+                }
+            });
+
+            async function actualizarOrdenes() {
+                const ids = obtenerIdsDeElementos();
+                await enviarIdsAlBackend(ids);
+            }
+
+            function obtenerIdsDeElementos() {
+                // obtiene los ids de la clase ids del 'input type = "hidden"'
+                // .get() lo transforma en un arreglo[] {1,2, ..., n}
+
+                const ids = $('.ids').map(function() {
+                    return $(this).val();
+                }).get(); 
+
+                return ids;
+            }
+
+            // AJAX
+            async function enviarIdsAlBackend(ids) {
+                var data = JSON.stringify(ids);
+
+                await fetch (urlOrdenar, {
+                    method: 'POST', // metodo de peticion.
+                    body: data, // cuerpo de la peticion
+                    headers: {
+                        // tipo de encabezado para indicar JSON.
+                        'Content-Type':'application/json'
+                    }
+                });
+            }
         })
     </script>
 }

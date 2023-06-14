@@ -17,11 +17,16 @@ namespace WebManejoPresupuestos.Servicios
             using (var conn = new SqlConnection(connectionStr)) 
             {
                 var id = await conn.QuerySingleAsync<int>(
-                    $@"INSERT INTO TiposCuentas (Nombre, UsuarioId, Orden)
-                     VALUES (@Nombre, @UsuarioId, 0);
-                     SELECT SCOPE_IDENTITY();", 
-                    tiposCuentas
-                    );
+                    "SP_TiposCuentas_Insertar",  // asi se llama un SP con Drapper.
+                    // objeto anonimo (El Sp no necesita todos los parametros del objeto)
+                    new {
+                        Id = tiposCuentas.UsuarioId,
+                        nombre = tiposCuentas.Nombre
+                    },
+
+                    // tipo de ejecucion.
+                    commandType: System.Data.CommandType.StoredProcedure
+                );
 
                 tiposCuentas.Id = id;
             }
@@ -49,7 +54,7 @@ namespace WebManejoPresupuestos.Servicios
             {
                 return await conn.QueryAsync<TiposCuentas>(
                     @"SELECT Id, Nombre, Orden FROM TiposCuentas
-                    WHERE UsuarioId = @UsuarioId", 
+                    WHERE UsuarioId = @UsuarioId ORDER BY Orden", 
                     new { usuarioId }
                 );
             }
@@ -89,8 +94,18 @@ namespace WebManejoPresupuestos.Servicios
             using (var connection = new SqlConnection(connectionStr))
             {
                 await connection.ExecuteAsync(
-                    @"DELETE TiposCuentas WHERE Id = @Id", new {Id}
+                    @"DELETE TiposCuentas WHERE Id = @Id", new { Id }
                 );
+            }
+        }
+
+        public async Task Ordenar(IEnumerable<TiposCuentas> tiposCuentasOrdenados)
+        {
+            var query = @"UPDATE TiposCuentas SET Orden = @Orden WHERE Id = @Id";
+
+            using (var connection = new SqlConnection(connectionStr))
+            {
+                await connection.ExecuteAsync(query, tiposCuentasOrdenados);
             }
         }
     }

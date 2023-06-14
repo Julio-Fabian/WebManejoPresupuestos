@@ -139,5 +139,29 @@ namespace WebManejoPresupuestos.Controllers
 
             return Json(true);
         }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Ordenar([FromBody] int[] ids) 
+        {
+            int usuarioId = repositorioServicioUsuarios.ObtenerUsuarioId();
+            var tiposCuentas = await repositorioTiposCuentas.Obtener(usuarioId);
+            var idsTiposCuentas = tiposCuentas.Select(x => x.Id);
+
+            var idsTiposCuentasNoSonDelUsuario = ids.Except(idsTiposCuentas).ToList();
+
+            if (idsTiposCuentasNoSonDelUsuario.Count > 0) 
+            {
+                return Forbid();
+            }
+
+            var tiposCuentasOrdenados = ids.Select((value, index) => 
+                    new TiposCuentas() {Id = value, Orden = index + 1}
+            ).AsEnumerable();
+
+            await repositorioTiposCuentas.Ordenar(tiposCuentasOrdenados);
+
+            return Ok();
+        }
     }
 }

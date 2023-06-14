@@ -15,5 +15,7 @@ namespace WebManejoPresupuestos.Servicios
         Task<TiposCuentas> ObtenerPorId(int id, int usuarioId);
 
         Task Borrar(int Id);
+
+        Task Ordenar(IEnumerable<TiposCuentas> tiposCuentasOrdenados);
     }
 }
