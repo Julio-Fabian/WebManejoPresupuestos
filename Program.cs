@@ -11,11 +11,14 @@ namespace WebManejoPresupuestos
             // Add services to the container.
             builder.Services
                    .AddControllersWithViews();
-            // servicio para agregar una cuenta.
+            // servicio para agregar un tipo cuenta.
             builder.Services
                    .AddTransient<IRepositorioTiposCuentas, RepositorioTiposCuentas>();
             builder.Services
                    .AddTransient<IServicioUsuarios, ServicioUsuarios>();
+            // servicio de cuentas.
+            builder.Services
+                   .AddTransient<IRepositorioCuentas, RepositorioCuentas>();
 
             var app = builder.Build();
 
