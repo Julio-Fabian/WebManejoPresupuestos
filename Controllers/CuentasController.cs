@@ -20,6 +20,24 @@ namespace WebManejoPresupuestos.Controllers
             this.repositorioCuentas = repositorioCuentas;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            var usuarioId = repositorioServicioUsuarios.ObtenerUsuarioId();
+            var cuentasConTipoCuenta = await repositorioCuentas.Buscar(usuarioId);
+
+            var modelo = cuentasConTipoCuenta
+                .GroupBy(c => c.TipoCuenta) // agrupamos por tipo cuenta.
+                .Select(grupo => new IndiceCuentasViewModel { // grupos de este tipo de modelo.
+                    // tipo de cuenta del grupo.
+                    TipoCuenta = grupo.Key,
+                    // listado de cuentas del mismo tipo.
+                    Cuentas = grupo.AsEnumerable()
+                }).ToList();
+            
+            return View(modelo);
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> Crear()
