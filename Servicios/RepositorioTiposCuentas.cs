@@ -20,8 +20,8 @@ namespace WebManejoPresupuestos.Servicios
                     "SP_TiposCuentas_Insertar",  // asi se llama un SP con Drapper.
                     // objeto anonimo (El Sp no necesita todos los parametros del objeto)
                     new {
-                        Id = tiposCuentas.UsuarioId,
-                        nombre = tiposCuentas.Nombre
+                        UsuarioId = tiposCuentas.UsuarioId,
+                        Nombre = tiposCuentas.Nombre
                     },
 
                     // tipo de ejecucion.

@@ -9,6 +9,7 @@ namespace WebManejoPresupuestos.Servicios
         Task Crear(Cuenta cuenta);
         Task<IEnumerable<Cuenta>> Buscar(int usuarioId);
         Task<Cuenta> ObtenerPorId(int id, int usuarioId);
+        Task Actualizar(CuentaCreacionViewModel cuenta);
     }
 
     public class RepositorioCuentas: IRepositorioCuentas
@@ -57,11 +58,26 @@ namespace WebManejoPresupuestos.Servicios
             using (var connection = new SqlConnection(connectionString))
             {
                 return await connection.QueryFirstOrDefaultAsync<Cuenta>(
-                    @"SELECT Cuentas.Id, Cuentas.Nombre, Balance, Descripcion, tc.TipoCuentaId
+                    @"SELECT Cuentas.Id, Cuentas.Nombre, Balance, Descripcion, TipoCuentaId
                       FROM Cuentas INNER JOIN TiposCuentas tc
                       ON tc.Id = Cuentas.TipoCuentaId
                       WHERE tc.UsuarioId = @UsuarioId AND Cuentas.Id = @Id",
                       new {id, usuarioId} // objeto anonimo
+                );
+            }
+        }
+
+
+        public async Task Actualizar(CuentaCreacionViewModel cuenta)
+        {
+            using (var connection = new SqlConnection(connectionString))
+            {
+                await connection.ExecuteAsync(
+                    @"UPDATE Cuentas
+                      SET Nombre = @Nombre, Balance = @Balance, Descripcion = @Descripcion,
+                      TipoCuentaId = @TipoCuentaId
+                      WHERE Id = @Id;",
+                    cuenta
                 );
             }
         }

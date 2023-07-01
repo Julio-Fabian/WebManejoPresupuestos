@@ -19,6 +19,8 @@ namespace WebManejoPresupuestos
             // servicio de cuentas.
             builder.Services
                    .AddTransient<IRepositorioCuentas, RepositorioCuentas>();
+            // servicio de auto mapper.
+            builder.Services.AddAutoMapper(typeof(Program));
 
             var app = builder.Build();
 

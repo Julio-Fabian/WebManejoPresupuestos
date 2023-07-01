@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebManejoPresupuestos.Models;
@@ -10,14 +11,17 @@ namespace WebManejoPresupuestos.Controllers
         private readonly IRepositorioTiposCuentas repositorioTiposCuentas;
         private readonly IServicioUsuarios repositorioServicioUsuarios;
         private readonly IRepositorioCuentas repositorioCuentas;
+        private readonly IMapper mapper;
 
         public CuentasController(IRepositorioTiposCuentas repositorioTiposCuentas,
                                  IServicioUsuarios repositorioServicioUsuarios,
-                                 IRepositorioCuentas repositorioCuentas) 
+                                 IRepositorioCuentas repositorioCuentas,
+                                 IMapper mapper) 
         {
             this.repositorioServicioUsuarios = repositorioServicioUsuarios;
             this.repositorioTiposCuentas = repositorioTiposCuentas;
             this.repositorioCuentas = repositorioCuentas;
+            this.mapper = mapper;
         }
 
         [HttpGet]
@@ -28,7 +32,8 @@ namespace WebManejoPresupuestos.Controllers
 
             var modelo = cuentasConTipoCuenta
                 .GroupBy(c => c.TipoCuenta) // agrupamos por tipo cuenta.
-                .Select(grupo => new IndiceCuentasViewModel { // grupos de este tipo de modelo.
+                .Select(grupo => new IndiceCuentasViewModel 
+                { // grupos de este tipo de modelo.
                     // tipo de cuenta del grupo.
                     TipoCuenta = grupo.Key,
                     // listado de cuentas del mismo tipo.
@@ -83,17 +88,34 @@ namespace WebManejoPresupuestos.Controllers
                 return RedirectToAction("NoEncontrado", "Home");
             }
 
-            var modelo = new CuentaCreacionViewModel() 
-            {
-                Id = cuenta.Id,
-                Nombre = cuenta.Nombre,
-                TipoCuentaId = cuenta.TipoCuentaId,
-                Descripcion = cuenta.Descripcion,
-                Balance = cuenta.Balance
-            };
+            // usamos el mapper y le indicamos que mapee la el objeto cuenta a un objeto CuentaCreacionViewModel
+            var modelo = mapper.Map<CuentaCreacionViewModel>(cuenta);
 
             modelo.TiposCuentas = await ObtenerTiposCuentas(usuarioId);
             return View(modelo);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Editar(CuentaCreacionViewModel cuentaEditar)
+        {
+            var usuarioId = repositorioServicioUsuarios.ObtenerUsuarioId();
+            var cuenta = await repositorioCuentas.ObtenerPorId(cuentaEditar.Id, usuarioId);
+
+            if (cuenta is null)
+            {
+                return RedirectToAction("NoEncontrado", "Home");
+            }
+
+            var tipoCuenta = await repositorioTiposCuentas.ObtenerPorId(cuentaEditar.TipoCuentaId, usuarioId);
+
+            if (tipoCuenta is null)
+            {
+                return RedirectToAction("NoEncontrado", "Home");
+            }
+
+            await repositorioCuentas.Actualizar(cuentaEditar);
+
+            return RedirectToAction("Index");
         }
 
         private async Task<IEnumerable<SelectListItem>> ObtenerTiposCuentas(int usuarioId)
