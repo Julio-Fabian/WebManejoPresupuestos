@@ -19,6 +19,9 @@ namespace WebManejoPresupuestos
             // servicio de cuentas.
             builder.Services
                    .AddTransient<IRepositorioCuentas, RepositorioCuentas>();
+            // servicio de categorias.
+            builder.Services
+                   .AddTransient<IRepositorioCategorias, RepositorioCategorias>();
             // servicio de auto mapper.
             builder.Services.AddAutoMapper(typeof(Program));
 
@@ -42,9 +45,7 @@ namespace WebManejoPresupuestos
 
             app.UseAuthorization();
 
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+            app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
         }

@@ -10,6 +10,7 @@ namespace WebManejoPresupuestos.Servicios
         Task<IEnumerable<Cuenta>> Buscar(int usuarioId);
         Task<Cuenta> ObtenerPorId(int id, int usuarioId);
         Task Actualizar(CuentaCreacionViewModel cuenta);
+        Task Borrar(int id);
     }
 
     public class RepositorioCuentas: IRepositorioCuentas
@@ -79,6 +80,15 @@ namespace WebManejoPresupuestos.Servicios
                       WHERE Id = @Id;",
                     cuenta
                 );
+            }
+        }
+
+
+        public async Task Borrar(int id)
+        {
+            using (var connection = new SqlConnection(connectionString))
+            {
+                await connection.ExecuteAsync("DELETE Cuentas WHERE Id = @Id;", new { id });
             }
         }
     }
