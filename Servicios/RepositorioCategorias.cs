@@ -7,6 +7,10 @@ namespace WebManejoPresupuestos.Servicios
     public interface IRepositorioCategorias
     {
         Task Crear(Categoria categoria);
+        Task<IEnumerable<Categoria>> Obtener(int usuarioId);
+        Task<Categoria> ObtenerPorId(int usuarioId, int id);
+        Task Actualizar(Categoria categoria);
+        Task Borrar(int id);
     }
 
     public class RepositorioCategorias : IRepositorioCategorias
@@ -33,6 +37,51 @@ namespace WebManejoPresupuestos.Servicios
                 categoria.Id = id;
             }
         }
-        
+
+        public async Task<IEnumerable<Categoria>> Obtener(int usuarioId)
+        {
+            using (var connection = new SqlConnection(_ConnectionString))
+            {
+                return await connection.QueryAsync<Categoria>(
+                    @"SELECT * FROM Categorias WHERE UsuarioId = @usuarioId", 
+                    new {usuarioId}
+                );
+            }
+        }
+
+
+        public async Task<Categoria> ObtenerPorId(int id, int usuarioId)
+        {
+            using (var connection = new SqlConnection(_ConnectionString))
+            {
+                return await connection.QueryFirstOrDefaultAsync<Categoria>(
+                    @"SELECT * FROM Categorias WHERE Id = @Id AND UsuarioId = @UsuarioId",
+                    new {id, usuarioId}
+                );
+            }
+        }
+
+
+        public async Task Actualizar(Categoria categoria)
+        {
+            using (var connection = new SqlConnection(_ConnectionString))
+            {
+                await connection.ExecuteAsync(
+                    @"UPDATE Categorias SET Nombre = @Nombre, TipoOperacionId = @TipoOperacionId
+                     WHERE Id = @Id;",
+                     categoria
+                );
+            }
+        }
+
+
+        public async Task Borrar(int id)
+        {
+            using (var connection = new SqlConnection(_ConnectionString))
+            {
+                await connection.ExecuteAsync("DELETE Categorias WHERE Id = @Id", new {id});
+            }
+        }
+
     }
 }
