@@ -9,19 +9,17 @@ namespace WebManejoPresupuestos
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services
-                   .AddControllersWithViews();
+            builder.Services.AddControllersWithViews();
             // servicio para agregar un tipo cuenta.
-            builder.Services
-                   .AddTransient<IRepositorioTiposCuentas, RepositorioTiposCuentas>();
-            builder.Services
-                   .AddTransient<IServicioUsuarios, ServicioUsuarios>();
+            builder.Services.AddTransient<IRepositorioTiposCuentas, RepositorioTiposCuentas>();
+            // servicio que retorna el ID de usuario.
+            builder.Services.AddTransient<IServicioUsuarios, ServicioUsuarios>();
             // servicio de cuentas.
-            builder.Services
-                   .AddTransient<IRepositorioCuentas, RepositorioCuentas>();
+            builder.Services.AddTransient<IRepositorioCuentas, RepositorioCuentas>();
             // servicio de categorias.
-            builder.Services
-                   .AddTransient<IRepositorioCategorias, RepositorioCategorias>();
+            builder.Services.AddTransient<IRepositorioCategorias, RepositorioCategorias>();
+            // Servicio de transacciones
+            builder.Services.AddTransient<IRepositorioTransacciones, RepositorioTransacciones>();
             // servicio de auto mapper.
             builder.Services.AddAutoMapper(typeof(Program));
 
