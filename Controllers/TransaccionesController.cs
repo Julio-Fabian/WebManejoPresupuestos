@@ -25,6 +25,12 @@ namespace WebManejoPresupuestos.Controllers
         }
 
         [HttpGet]
+        public IActionResult Index()
+        {
+            return View();
+        }
+
+        [HttpGet]
         public async Task<IActionResult> Crear()
         {
             var usuarioId = servicioUsuarios.ObtenerUsuarioId();
