@@ -1,22 +1,29 @@
-@model TransaccionCreacionViewModel
+﻿@model TransaccionActualizacionViewModel
 
 @{
-    ViewData["Title"] = "Crear nueva transaccion";
+    ViewData["Title"] = "Editar transaccion";
 }
 
-<h1>Crear una nueva transaccion</h1>
+<h1>Editar transaccion</h1>
 <h5>Una transaccion te permite indicar tus ingresos y gastos.</h5>
 
 <br>
 
-<form asp-action="Crear">
+<form asp-action="Editar">
     <!-- Valida todo el modelo -->
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <!-- valores a enviar en el metodo del controlador. -->
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="MontoAnterior" />
+    <input type="hidden" asp-for="CuentaAnteriorId" />
+
+    <!--Campos del formulario-->
 
     <div class="mb-3">
         <label asp-for="FechaTransaccion" class="form-label"></label>
         <input asp-for="FechaTransaccion" class="form-control" />
-        
+
         <div asp-validation-for="FechaTransaccion" class="text-danger"></div>
     </div>
 
@@ -56,7 +63,16 @@
     </div>
 
     <div class="mb-3">
-        <button class="btn btn-primary" type="submit">Crear</button>
+        <button class="btn btn-primary">
+            <i class="bi bi-pencil-fill"></i>
+            Editar transaccion
+        </button>
+        
+        <button class="btn btn-danger" asp-action="Borrar">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            Eliminar transaccion
+        </button>
+        
         <a class="btn btn-secondary" asp-action="Index">Cancelar</a>
     </div>
 
