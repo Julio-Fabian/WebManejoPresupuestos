@@ -164,6 +164,8 @@ namespace WebManejoPresupuestos.Controllers
             DateTime fechaInicio;
             DateTime fechaFin;
 
+            // si la informacion de la fecha de inicio esta fuera de rangos para una fecha real
+            // tomamos como fecha inicial el mes y año actual y lo situamos el primer dia del mes.
             if (mes<= 0 || mes > 12 || anio <= 1900) 
             {
                 var hoy = DateTime.Today;
@@ -174,8 +176,11 @@ namespace WebManejoPresupuestos.Controllers
                 fechaInicio = new DateTime(anio, mes, 1);
             }
 
+            // fecha fin es un mes despues -1, (ultimo dia del mes)
             fechaFin = fechaInicio.AddMonths(1).AddDays(-1);
 
+            // creamos un objeto que usaremos para consultar la informacion con la
+            // base de datos (solo se usa para la consulta).
             var obtenerTransaccionesPorCuenta = new ObtenerTransaccionesPorCuenta()
             {
                 CuentaId = id,
@@ -185,9 +190,14 @@ namespace WebManejoPresupuestos.Controllers
             };
 
             var transacciones = await repositorioTransacciones.ObtenerPorCuentaId(obtenerTransaccionesPorCuenta);
+
+            // Este modelo se enviara a la vista y contendra toda la informacion encesaria
+            // para visualizar las transacciones de la cuenta.
             var modelo = new ReporteTransaccionesDetalladas();
             ViewBag.Cuenta = cuenta.Nombre;
 
+            // ordenamos las transacciones por fecha y las agregamos al modelo, junto a sus
+            // fechas de inicio y fin.
             var transaccionesPorFecha = transacciones.OrderByDescending(x => x.FechaTransaccion)
                                         .GroupBy(x => x.FechaTransaccion)
                                         .Select(grupo => new ReporteTransaccionesDetalladas.TransaccionesPorFecha()
@@ -195,6 +205,7 @@ namespace WebManejoPresupuestos.Controllers
                                             FechaTransaccion = grupo.Key,
                                             Transacciones = grupo.AsEnumerable()
                                         });
+
             modelo.TransaccionesAgrupadas = transaccionesPorFecha;
             modelo.FechaInicio = fechaInicio;
             modelo.FechaFin = fechaFin;
