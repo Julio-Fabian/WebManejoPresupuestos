@@ -151,7 +151,7 @@ namespace WebManejoPresupuestos.Controllers
         }
 
 
-        public async Task<IActionResult> Detalle(int id, int mes, int anio)
+        public async Task<IActionResult> Detalle(int id, int mes, int año)
         {
             var usuarioId = repositorioServicioUsuarios.ObtenerUsuarioId();
             var cuenta = await repositorioCuentas.ObtenerPorId(id, usuarioId);
@@ -166,14 +166,14 @@ namespace WebManejoPresupuestos.Controllers
 
             // si la informacion de la fecha de inicio esta fuera de rangos para una fecha real
             // tomamos como fecha inicial el mes y año actual y lo situamos el primer dia del mes.
-            if (mes<= 0 || mes > 12 || anio <= 1900) 
+            if (mes<= 0 || mes > 12 || año <= 1900) 
             {
                 var hoy = DateTime.Today;
                 fechaInicio = new DateTime(hoy.Year, hoy.Month, 1);
             }
             else
             {
-                fechaInicio = new DateTime(anio, mes, 1);
+                fechaInicio = new DateTime(año, mes, 1);
             }
 
             // fecha fin es un mes despues -1, (ultimo dia del mes)
@@ -209,6 +209,14 @@ namespace WebManejoPresupuestos.Controllers
             modelo.TransaccionesAgrupadas = transaccionesPorFecha;
             modelo.FechaInicio = fechaInicio;
             modelo.FechaFin = fechaFin;
+
+            ViewBag.mesAnterior = fechaInicio.AddMonths(-1).Month;
+            ViewBag.yearAnterior = fechaInicio.AddMonths(-1).Year;
+
+            ViewBag.mesPosterior = fechaInicio.AddMonths(1).Month;
+            ViewBag.yearPosterior = fechaInicio.AddMonths(1).Year;
+            // obtenemos la url en donde nos encontramos:
+            ViewBag.urlRetorno = HttpContext.Request.Path + HttpContext.Request.QueryString;
 
             return View(modelo);
         }

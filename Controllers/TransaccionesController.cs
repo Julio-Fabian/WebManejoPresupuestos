@@ -80,7 +80,7 @@ namespace WebManejoPresupuestos.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Editar(int id)
+        public async Task<IActionResult> Editar(int id, string urlRetorno = null)
         {
             var usuarioId = servicioUsuarios.ObtenerUsuarioId();
             var transaccion = await repositorioTransacciones.ObtenerTransaccionPorId(id, usuarioId);
@@ -102,6 +102,7 @@ namespace WebManejoPresupuestos.Controllers
             modelo.CuentaAnteriorId = transaccion.CuentaId;
             modelo.Categorias = await ObtenerCategorias(usuarioId, transaccion.TipoOperacionId);
             modelo.Cuentas = await ObtenerCuentas(usuarioId);
+            modelo.UrlRetorno = urlRetorno;
 
             return View(modelo);
         }
@@ -145,11 +146,19 @@ namespace WebManejoPresupuestos.Controllers
                 modelo.CuentaAnteriorId
             );
 
-            return RedirectToAction("Index");
+            if (string.IsNullOrEmpty(modelo.UrlRetorno))
+            {
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return LocalRedirect(modelo.UrlRetorno); // investigar LocalRedirect
+            }
+
         }
 
         [HttpPost]
-        public async Task<IActionResult> Borrar(int id)
+        public async Task<IActionResult> Borrar(int id, string urlRetorno = null)
         {
             var usuarioId = servicioUsuarios.ObtenerUsuarioId();
             var transaccion = await repositorioTransacciones.ObtenerTransaccionPorId(id, usuarioId);
@@ -160,7 +169,15 @@ namespace WebManejoPresupuestos.Controllers
             }
 
             await repositorioTransacciones.Borrar(id);
-            return RedirectToAction("Index");
+
+            if (string.IsNullOrEmpty(urlRetorno))
+            {
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return LocalRedirect(urlRetorno); // investigar LocalRedirect
+            }
         }
 
         /// METODOS PRIVADOS/PUBLICOS PARA FUNCIONALIDADES O OBTENCION DE DATOS DEL SERVIDOR ///
