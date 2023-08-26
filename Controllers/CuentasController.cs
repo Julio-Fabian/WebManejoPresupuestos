@@ -13,18 +13,21 @@ namespace WebManejoPresupuestos.Controllers
         private readonly IRepositorioCuentas repositorioCuentas;
         private readonly IMapper mapper;
         private readonly IRepositorioTransacciones repositorioTransacciones;
+        private readonly IservicioReportes servicioReportes;
 
         public CuentasController(IRepositorioTiposCuentas repositorioTiposCuentas,
                                  IServicioUsuarios repositorioServicioUsuarios,
                                  IRepositorioCuentas repositorioCuentas,
                                  IMapper mapper,
-                                 IRepositorioTransacciones repositorioTransacciones) 
+                                 IRepositorioTransacciones repositorioTransacciones,
+                                 IservicioReportes servicioReportes) 
         {
             this.repositorioServicioUsuarios = repositorioServicioUsuarios;
             this.repositorioTiposCuentas = repositorioTiposCuentas;
             this.repositorioCuentas = repositorioCuentas;
             this.mapper = mapper;
             this.repositorioTransacciones = repositorioTransacciones;
+            this.servicioReportes = servicioReportes;
         }
 
         [HttpGet]
@@ -161,62 +164,9 @@ namespace WebManejoPresupuestos.Controllers
                 return RedirectToAction("NoEncontrado", "Home");
             }
 
-            DateTime fechaInicio;
-            DateTime fechaFin;
-
-            // si la informacion de la fecha de inicio esta fuera de rangos para una fecha real
-            // tomamos como fecha inicial el mes y año actual y lo situamos el primer dia del mes.
-            if (mes<= 0 || mes > 12 || año <= 1900) 
-            {
-                var hoy = DateTime.Today;
-                fechaInicio = new DateTime(hoy.Year, hoy.Month, 1);
-            }
-            else
-            {
-                fechaInicio = new DateTime(año, mes, 1);
-            }
-
-            // fecha fin es un mes despues -1, (ultimo dia del mes)
-            fechaFin = fechaInicio.AddMonths(1).AddDays(-1);
-
-            // creamos un objeto que usaremos para consultar la informacion con la
-            // base de datos (solo se usa para la consulta).
-            var obtenerTransaccionesPorCuenta = new ObtenerTransaccionesPorCuenta()
-            {
-                CuentaId = id,
-                UsuarioId = usuarioId,
-                FechaInicio = fechaInicio,
-                FechaFin = fechaFin
-            };
-
-            var transacciones = await repositorioTransacciones.ObtenerPorCuentaId(obtenerTransaccionesPorCuenta);
-
-            // Este modelo se enviara a la vista y contendra toda la informacion encesaria
-            // para visualizar las transacciones de la cuenta.
-            var modelo = new ReporteTransaccionesDetalladas();
             ViewBag.Cuenta = cuenta.Nombre;
 
-            // ordenamos las transacciones por fecha y las agregamos al modelo, junto a sus
-            // fechas de inicio y fin.
-            var transaccionesPorFecha = transacciones.OrderByDescending(x => x.FechaTransaccion)
-                                        .GroupBy(x => x.FechaTransaccion)
-                                        .Select(grupo => new ReporteTransaccionesDetalladas.TransaccionesPorFecha()
-                                        {
-                                            FechaTransaccion = grupo.Key,
-                                            Transacciones = grupo.AsEnumerable()
-                                        });
-
-            modelo.TransaccionesAgrupadas = transaccionesPorFecha;
-            modelo.FechaInicio = fechaInicio;
-            modelo.FechaFin = fechaFin;
-
-            ViewBag.mesAnterior = fechaInicio.AddMonths(-1).Month;
-            ViewBag.yearAnterior = fechaInicio.AddMonths(-1).Year;
-
-            ViewBag.mesPosterior = fechaInicio.AddMonths(1).Month;
-            ViewBag.yearPosterior = fechaInicio.AddMonths(1).Year;
-            // obtenemos la url en donde nos encontramos:
-            ViewBag.urlRetorno = HttpContext.Request.Path + HttpContext.Request.QueryString;
+            var modelo = await servicioReportes.ObtenerReportePorCuenta(usuarioId, id, mes, año, ViewBag);
 
             return View(modelo);
         }

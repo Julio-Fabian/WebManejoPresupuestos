@@ -20,6 +20,10 @@ namespace WebManejoPresupuestos
             builder.Services.AddTransient<IRepositorioCategorias, RepositorioCategorias>();
             // Servicio de transacciones
             builder.Services.AddTransient<IRepositorioTransacciones, RepositorioTransacciones>();
+            // servicio de reportes.
+            builder.Services.AddTransient<IservicioReportes, ServicioReportes>();
+            // servicio de http context
+            builder.Services.AddHttpContextAccessor();
             // servicio de auto mapper.
             builder.Services.AddAutoMapper(typeof(Program));
 
@@ -43,7 +47,8 @@ namespace WebManejoPresupuestos
 
             app.UseAuthorization();
 
-            app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
+            // controlador por defecto (pagina principal que carga).
+            app.MapControllerRoute(name: "default", pattern: "{controller=Transacciones}/{action=Index}/{id?}");
 
             app.Run();
         }
