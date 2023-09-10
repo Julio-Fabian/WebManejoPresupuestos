@@ -6,6 +6,7 @@ namespace WebManejoPresupuestos.Servicios
     {
         Task<ReporteTransaccionesDetalladas> ObtenerReporteDetallado(int usuarioId, int mes, int año, dynamic ViewBag);
         Task<ReporteTransaccionesDetalladas> ObtenerReportePorCuenta(int usuarioId, int cuentaId, int mes, int año, dynamic viewBag);
+        Task<IEnumerable<ResultadoObtenerPorSemana>> ObtenerReporteSemanal(int usuarioId, int mes, int año, dynamic viewBag);
     }
     public class ServicioReportes : IservicioReportes
     {
@@ -87,8 +88,29 @@ namespace WebManejoPresupuestos.Servicios
 
         }
 
+        public async Task<IEnumerable<ResultadoObtenerPorSemana>> ObtenerReporteSemanal(int usuarioId, int mes, int año, dynamic viewBag)
+        {
+            (DateTime fechaInicio, DateTime fechaFin) = GenerarFechaInicioFechaFin(mes, año);
+
+            // parametro de la vista.
+            var parametro = new ParametroObtenerTransaccionesPorUsuario()
+            {
+                UsuarioId = usuarioId,
+                FechaFin = fechaFin,
+                FechaInicio = fechaInicio
+            };
+
+            AsignarValoresViewBag(viewBag, fechaInicio);
+
+            var modelo = await repositorioTransacciones.ObtenerPorSemana(parametro);
+
+            return modelo;
+        }
+
 
         #endregion
+
+        #region Calculos
 
         // Metodos privados de simplificacion de operaciones.
         private (DateTime fechaInicio, DateTime fechaFin) GenerarFechaInicioFechaFin(int mes, int año)
@@ -148,5 +170,7 @@ namespace WebManejoPresupuestos.Servicios
             // obtenemos la url en donde nos encontramos:
             viewBag.urlRetorno = httpContext.Request.Path + httpContext.Request.QueryString;
         }
+
+        #endregion
     }
 }
