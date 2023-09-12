@@ -47,9 +47,67 @@ namespace WebManejoPresupuestos.Controllers
             IEnumerable<ResultadoObtenerPorSemana> transaccionesPorSemana = 
                         await servicioReportes.ObtenerReporteSemanal(usuarioId, mes, año, ViewBag);
 
-            // TODO: Realizar algoritmo.
+            // agrupacion de los registros (sin fechas)
+            var agrupado = transaccionesPorSemana.GroupBy(t => t.Semana).Select(x =>
+                new ResultadoObtenerPorSemana()
+                {
+                    Semana = x.Key,
+                    Ingresos = x.Where(x => x.TipoOperacionId == TipoOperacion.Ingreso).Select(x => x.Monto).FirstOrDefault(),
+                    Gastos = x.Where(x => x.TipoOperacionId == TipoOperacion.Gasto).Select(x => x.Monto).FirstOrDefault()
+                }
+            ).ToList();
 
-            return View();
+            // agregando la fecha de los registros.
+            if (año == 0 || mes == 0)
+            {
+                var hoy = DateTime.Today.Date;
+                año = hoy.Year;
+                mes = hoy.Month;
+            }
+
+            var fechaReferencia = new DateTime(año, mes, 1);
+            var diasDelMes = Enumerable.Range(1, fechaReferencia.AddMonths(1).AddDays(-1).Day);
+            
+            // guardamos los dias en un arreglo de arreglos donde cada sub arreglo tiene 7 dias
+            // (una Semana) y en conjunto representan los dias del mes.
+            var diasSegmentados = diasDelMes.Chunk(7).ToList();
+
+            // iteramos el arreglo de arreglos.
+            for (int i = 0; i < diasSegmentados.Count(); i++)
+            {
+                var semana = i + 1; // Semana 1 de Febrero
+                var fechaInicio = new DateTime(año,mes, diasSegmentados[i].First()); // Lunes 1 de Febrero
+                var fechaFin = new DateTime(año, mes, diasSegmentados[i].Last()); // Domingo 7 de Febrero
+
+                var grupoSemana = agrupado.FirstOrDefault(x => x.Semana == semana);
+
+                if (grupoSemana == null)
+                {
+                    agrupado.Add(
+                        new ResultadoObtenerPorSemana()
+                        {
+                            Semana = semana,
+                            FechaInicio = fechaInicio,
+                            FechaFin = fechaFin
+                        }
+                    );
+                }
+                else
+                {
+                    grupoSemana.FechaInicio = fechaInicio;
+                    grupoSemana.FechaFin = fechaFin;
+                }
+            }
+
+            agrupado = agrupado.OrderBy(x => x.Semana).ToList();
+
+            var modelo = new ReporteSemanalViewModel()
+            {
+                TransaccionesPorSemana = agrupado,
+                FechaReferencia = fechaReferencia
+            };
+
+            return View(modelo);
         }
 
         public IActionResult Mensual()
