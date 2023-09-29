@@ -1,31 +1,37 @@
 ﻿@model SubMenuTransacciones
 <!-- Sub menu de la vista transacciones -->
 
-<ul class="nav nav-pills nav-fill mb-3">
+<div class="card mb-3 shadow-sm">
 
-    <li class="nav-item"> 
-        <a class="nav-link @(Model == SubMenuTransacciones.Diario ? "active" : null)" 
-        asp-action="Index">Diario</a> 
-    </li>
+    <div class="card-body">
+        <ul class="nav nav-pills nav-fill">
 
-    <li class="nav-item"> 
-        <a class="nav-link @(Model == SubMenuTransacciones.Semanal ? "active" : null)" 
-        asp-action="Semanal">Semanal</a> 
-    </li>
+            <li class="nav-item"> 
+                <a class="nav-link @(Model == SubMenuTransacciones.Diario ? "active" : null)" 
+                asp-action="Index">Diario</a> 
+            </li>
 
-    <li class="nav-item"> 
-        <a class="nav-link @(Model == SubMenuTransacciones.Mensual ? "active" : null)" 
-        asp-action="Mensual">Mensual</a> 
-    </li>
+            <li class="nav-item"> 
+                <a class="nav-link @(Model == SubMenuTransacciones.Semanal ? "active" : null)" 
+                asp-action="Semanal">Semanal</a> 
+            </li>
 
-    <li class="nav-item"> 
-        <a class="nav-link @(Model == SubMenuTransacciones.Excel ? "active" : null)" 
-        asp-action="ExcelReporte">Excel</a> 
-    </li>
+            <li class="nav-item"> 
+                <a class="nav-link @(Model == SubMenuTransacciones.Mensual ? "active" : null)" 
+                asp-action="Mensual">Mensual</a> 
+            </li>
 
-    <li class="nav-item"> 
-        <a class="nav-link @(Model == SubMenuTransacciones.Calendario ? "active" : null)" 
-        asp-action="Calendario">Calendario</a> 
-    </li>
+            <li class="nav-item"> 
+                <a class="nav-link @(Model == SubMenuTransacciones.Excel ? "active" : null)" 
+                asp-action="ExcelReporte">Excel</a> 
+            </li>
 
-</ul>
+            <li class="nav-item"> 
+                <a class="nav-link @(Model == SubMenuTransacciones.Calendario ? "active" : null)" 
+                asp-action="Calendario">Calendario</a> 
+            </li>
+
+        </ul>
+    </div>
+
+</div>
