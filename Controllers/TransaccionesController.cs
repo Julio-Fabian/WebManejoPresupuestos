@@ -110,9 +110,55 @@ namespace WebManejoPresupuestos.Controllers
             return View(modelo);
         }
 
-        public IActionResult Mensual()
+        public async Task<IActionResult> Mensual(int año)
         {
-            return View();
+            var usuarioId = servicioUsuarios.ObtenerUsuarioId();
+
+            if (año == 0)
+            {
+                año = DateTime.Today.Year;
+            }
+
+            var transaccionesPorMes = await repositorioTransacciones.ObtenerPorMes(usuarioId, año);
+
+            var transaccionesAgrupadas = transaccionesPorMes.GroupBy(x => x.Mes)
+                    .Select(x => new ResultadoObtenerPorMes()
+                    {
+                        Mes = x.Key,
+                        Ingreso = x.Where(x => x.TipoOperacionId == TipoOperacion.Ingreso)
+                                 .Select(x => x.Monto).FirstOrDefault(),
+                        Gasto = x.Where(x => x.TipoOperacionId == TipoOperacion.Gasto)
+                                 .Select(x => x.Monto).FirstOrDefault()
+                    }
+                ).ToList();
+
+            for (int mes = 1; mes <= 12; mes++)
+            {
+                var transaccion = transaccionesAgrupadas.FirstOrDefault(t => t.Mes == mes);
+                var fechaReferencia = new DateTime(año, mes, 1);
+
+                if (transaccion == null)
+                {
+                    transaccionesAgrupadas.Add(
+                            new ResultadoObtenerPorMes()
+                            {
+                                Mes = mes,
+                                FechaReferencia = fechaReferencia
+                            }
+                        );
+                }
+                else
+                {
+                    transaccion.FechaReferencia = fechaReferencia;
+                }
+            }
+
+            transaccionesAgrupadas = transaccionesAgrupadas.OrderByDescending(x => x.Mes).ToList();
+
+            var modelo = new ReporteMensualViewModel();
+            modelo.TransaccionesPorMes = transaccionesAgrupadas;
+
+            return View(modelo);
         }
 
         public IActionResult ExcelReporte()
