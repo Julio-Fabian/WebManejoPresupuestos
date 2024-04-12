@@ -11,7 +11,7 @@ namespace WebManejoPresupuestos.Servicios
         Task Borrar(int id);
         Task Crear(Transaccion t);
         Task<IEnumerable<Transaccion>> ObtenerPorCuentaId(ObtenerTransaccionesPorCuenta modelo);
-        Task<IEnumerable<ResultadoObtenerPorMes>> ObtenerPorMes(int usuarioId, int año);
+        Task<IEnumerable<ResultadoObtenerPorMes>> ObtenerPorMes(int usuarioId, int aÃ±o);
         Task<IEnumerable<ResultadoObtenerPorSemana>> ObtenerPorSemana(ParametroObtenerTransaccionesPorUsuario modelo);
         Task<IEnumerable<Transaccion>> ObtenerPorUsuarioId(ParametroObtenerTransaccionesPorUsuario modelo);
         Task<Transaccion> ObtenerTransaccionPorId(int id, int usuarioId);
@@ -153,7 +153,7 @@ namespace WebManejoPresupuestos.Servicios
             }
         }
 
-        public async Task<IEnumerable<ResultadoObtenerPorMes>> ObtenerPorMes(int usuarioId, int año)
+        public async Task<IEnumerable<ResultadoObtenerPorMes>> ObtenerPorMes(int usuarioId, int ano)
         {
             using (var connection = new SqlConnection(_ConnectionString))
             {
@@ -163,9 +163,9 @@ namespace WebManejoPresupuestos.Servicios
 	                    Transacciones INNER JOIN Categorias cat
                     ON cat.Id = Transacciones.CategoriaId
                     WHERE
-	                    Transacciones.UsuarioId = @usuarioId AND YEAR(FechaTransaccion) = @Año
+	                    Transacciones.UsuarioId = @usuarioId AND YEAR(FechaTransaccion) = @Aï¿½o
                     GROUP BY MONTH(FechaTransaccion), cat.TipoOperacionId;",
-                    new {usuarioId, año}
+                    new {usuarioId, ano}
                     );
             }
         }

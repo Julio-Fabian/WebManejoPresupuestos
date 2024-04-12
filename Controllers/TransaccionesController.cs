@@ -34,20 +34,20 @@ namespace WebManejoPresupuestos.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(int mes, int año)
+        public async Task<IActionResult> Index(int mes, int aÃ±o)
         {
             var usuarioId = servicioUsuarios.ObtenerUsuarioId();
 
-            var modelo = await servicioReportes.ObtenerReporteDetallado(usuarioId, mes, año, ViewBag);
+            var modelo = await servicioReportes.ObtenerReporteDetallado(usuarioId, mes, aÃ±o, ViewBag);
 
             return View(modelo);
         }
 
-        public async Task<IActionResult> Semanal(int mes, int año)
+        public async Task<IActionResult> Semanal(int mes, int aÃ±o)
         {
             var usuarioId = servicioUsuarios.ObtenerUsuarioId();
             IEnumerable<ResultadoObtenerPorSemana> transaccionesPorSemana = 
-                        await servicioReportes.ObtenerReporteSemanal(usuarioId, mes, año, ViewBag);
+                        await servicioReportes.ObtenerReporteSemanal(usuarioId, mes, aÃ±o, ViewBag);
 
             // agrupacion de los registros (sin fechas)
             var agrupado = transaccionesPorSemana.GroupBy(t => t.Semana).Select(x =>
@@ -60,14 +60,14 @@ namespace WebManejoPresupuestos.Controllers
             ).ToList();
 
             // agregando la fecha de los registros.
-            if (año == 0 || mes == 0)
+            if (aÃ±o == 0 || mes == 0)
             {
                 var hoy = DateTime.Today.Date;
-                año = hoy.Year;
+                aÃ±o = hoy.Year;
                 mes = hoy.Month;
             }
 
-            var fechaReferencia = new DateTime(año, mes, 1);
+            var fechaReferencia = new DateTime(aÃ±o, mes, 1);
             var diasDelMes = Enumerable.Range(1, fechaReferencia.AddMonths(1).AddDays(-1).Day);
             
             // guardamos los dias en un arreglo de arreglos donde cada sub arreglo tiene 7 dias
@@ -78,8 +78,8 @@ namespace WebManejoPresupuestos.Controllers
             for (int i = 0; i < diasSegmentados.Count(); i++)
             {
                 var semana = i + 1; // Semana 1 de Febrero
-                var fechaInicio = new DateTime(año,mes, diasSegmentados[i].First()); // Lunes 1 de Febrero
-                var fechaFin = new DateTime(año, mes, diasSegmentados[i].Last()); // Domingo 7 de Febrero
+                var fechaInicio = new DateTime(aÃ±o,mes, diasSegmentados[i].First()); // Lunes 1 de Febrero
+                var fechaFin = new DateTime(aÃ±o, mes, diasSegmentados[i].Last()); // Domingo 7 de Febrero
 
                 var grupoSemana = agrupado.FirstOrDefault(x => x.Semana == semana);
 
@@ -112,16 +112,16 @@ namespace WebManejoPresupuestos.Controllers
             return View(modelo);
         }
 
-        public async Task<IActionResult> Mensual(int año)
+        public async Task<IActionResult> Mensual(int aÃ±o)
         {
             var usuarioId = servicioUsuarios.ObtenerUsuarioId();
 
-            if (año == 0)
+            if (aÃ±o == 0)
             {
-                año = DateTime.Today.Year;
+                aÃ±o = DateTime.Today.Year;
             }
 
-            var transaccionesPorMes = await repositorioTransacciones.ObtenerPorMes(usuarioId, año);
+            var transaccionesPorMes = await repositorioTransacciones.ObtenerPorMes(usuarioId, aÃ±o);
 
             var transaccionesAgrupadas = transaccionesPorMes.GroupBy(x => x.Mes)
                     .Select(x => new ResultadoObtenerPorMes()
@@ -137,7 +137,7 @@ namespace WebManejoPresupuestos.Controllers
             for (int mes = 1; mes <= 12; mes++)
             {
                 var transaccion = transaccionesAgrupadas.FirstOrDefault(t => t.Mes == mes);
-                var fechaReferencia = new DateTime(año, mes, 1);
+                var fechaReferencia = new DateTime(aÃ±o, mes, 1);
 
                 if (transaccion == null)
                 {
@@ -159,7 +159,7 @@ namespace WebManejoPresupuestos.Controllers
 
             var modelo = new ReporteMensualViewModel();
             modelo.TransaccionesPorMes = transaccionesAgrupadas;
-            modelo.Año = año;
+            modelo.AÃ±o = aÃ±o;
 
             return View(modelo);
         }
@@ -170,9 +170,9 @@ namespace WebManejoPresupuestos.Controllers
         }
 
         [HttpGet]
-        public async Task<FileResult> ExportarExcelPorMes(int mes, int año)
+        public async Task<FileResult> ExportarExcelPorMes(int mes, int aÃ±o)
         {
-            var fechaInicio = new DateTime(año, mes, 1);
+            var fechaInicio = new DateTime(aÃ±o, mes, 1);
             var fechaFin = fechaInicio.AddMonths(1).AddDays(-1);
             var usuarioId = servicioUsuarios.ObtenerUsuarioId();
 
@@ -191,9 +191,9 @@ namespace WebManejoPresupuestos.Controllers
         }
 
         [HttpGet]
-        public async Task<FileResult> ExportarExcelPorAño(int año)
+        public async Task<FileResult> ExportarExcelPorAÃ±o(int aÃ±o)
         {
-            var fechaInicio = new DateTime(año, 1, 1);
+            var fechaInicio = new DateTime(aÃ±o, 1, 1);
             var fechaFin = fechaInicio.AddYears(1).AddDays(-1);
             var usuarioId = servicioUsuarios.ObtenerUsuarioId();
 
